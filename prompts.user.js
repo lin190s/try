@@ -6,7 +6,7 @@
 // @description  awesome chatGPT prompts
 // @author       doggeddog
 // @resource     IMPORTED_CSS https://github.com/doggeddog/tribute/raw/master/dist/tribute.css
-// @resource     jsonData https://github.com/doggeddog/chatgpt_prompts/raw/master/prompts.json
+// @resource     jsonData https://github.com/lin190s/try/blob/main/prompts.json
 // @require      https://github.com/doggeddog/tribute/raw/master/dist/tribute.js
 // @match        https://chat.openai.com/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
