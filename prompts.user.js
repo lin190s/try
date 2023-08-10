@@ -6,7 +6,7 @@
 // @description  awesome chatGPT prompts
 // @author       doggeddog
 // @resource     IMPORTED_CSS https://github.com/doggeddog/tribute/raw/master/dist/tribute.css
-// @resource     jsonData https://github.com/doggeddog/chatgpt_prompts/raw/master/prompts.json
+// @resource     jsonData https://raw.githubusercontent.com/lin190s/try/main/prompts.json
 // @require      https://github.com/doggeddog/tribute/raw/master/dist/tribute.js
 // @match        https://chat.openai.com/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -15,8 +15,6 @@
 // @run-at       document-end
 // ==/UserScript==
 
-// 将您的 JSON 数据链接放在这里，确保它是一个可以直接访问的 URL
-var jsonDataURL = "https://raw.githubusercontent.com/lin190s/try/main/prompts.json";
 var defaultData = JSON.parse(GM_getResourceText("jsonData"));
 var userData = [
   {
@@ -43,63 +41,51 @@ function load() {
   if (textArea.hasAttribute("data-tribute")) {
     return;
   }
+  var tribute = new Tribute({
+    trigger: '/',
+    values: userData,
+    selectTemplate: function (item) {
+      if (typeof item === "undefined") return null;
+      return item.original.prompt;
+    },
+    requireLeadingSpace: false
+  });
+  tribute.attach(textArea);
 
-  // 创建 XMLHttpRequest 对象以获取实时 JSON 数据
-  var xhr = new XMLHttpRequest();
-  xhr.overrideMimeType("application/json");
-  xhr.open("GET", jsonDataURL, true);
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      userData = JSON.parse(xhr.responseText);
-      userData.push(...defaultData);
+  var tributeCN = new Tribute({
+    trigger: '#',
+    values: userData.filter(function (promp) {
+      return promp.prompt_cn;
+    }),
+    selectTemplate: function (item) {
+      if (typeof item === "undefined") return null;
+      if (item.original.prompt_cn) {
+        return item.original.prompt_cn;
+      } else {
+        return item.original.prompt;
+      }
+    },
+    menuItemTemplate: function (item) {
+      if (item.original.title) {
+        return item.original.title;
+      } else {
+        return item.original.key;
+      }
 
-      var tribute = new Tribute({
-        trigger: '/',
-        values: userData,
-        selectTemplate: function (item) {
-          if (typeof item === "undefined") return null;
-          return item.original.prompt;
-        },
-        requireLeadingSpace: false
-      });
-      tribute.attach(textArea);
-
-      var tributeCN = new Tribute({
-        trigger: '#',
-        values: userData.filter(function (promp) {
-          return promp.prompt_cn;
-        }),
-        selectTemplate: function (item) {
-          if (typeof item === "undefined") return null;
-          if (item.original.prompt_cn) {
-            return item.original.prompt_cn;
-          } else {
-            return item.original.prompt;
-          }
-        },
-        menuItemTemplate: function (item) {
-          if (item.original.title) {
-            return item.original.title;
-          } else {
-            return item.original.key;
-          }
-        },
-        lookup: function (item, mentionText) {
-          if (!item.title) {
-            return item.key;
-          }
-          if (item.pinyin) {
-            return item.title + " " + item.pinyin;
-          } else {
-            return item.title;
-          }
-        },
-        requireLeadingSpace: false
-      });
-      tributeCN.attach(textArea);
-    }
-  };
-  xhr.send(null);
+    },
+    lookup: function (item, mentionText) {
+      if (!item.title) {
+        return item.key;
+      }
+      if (item.pinyin) {
+        return item.title + " " + item.pinyin;
+      } else {
+        return item.title;
+      }
+    },
+    requireLeadingSpace: false
+  });
+  tributeCN.attach(textArea);
 }
 
 (function () {
